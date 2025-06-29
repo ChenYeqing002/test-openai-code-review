@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GroupBuyDiscount implements Serializable{
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID= -8299822870006583702L;
 
     /**
      *  自增ID

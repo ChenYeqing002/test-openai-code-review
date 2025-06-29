@@ -18,9 +18,9 @@ public class SwitchRoot extends AbstractGroupBuyMarketSupport<MarketProductEntit
     private MarketNode marketNode;
 
     @Override
-    public TrialBalanceEntity apply(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
+    public TrialBalanceEntity doApply(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
         log.info("处理开关节点业务");
-        return this.router(requestParameter, dynamicContext);
+        return router(requestParameter, dynamicContext);
     }
 
     @Override

@@ -2,6 +2,8 @@ package cn.cyq.domain.activity.service.trial.factory;
 
 import cn.cyq.domain.activity.model.entity.MarketProductEntity;
 import cn.cyq.domain.activity.model.entity.TrialBalanceEntity;
+import cn.cyq.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
+import cn.cyq.domain.activity.model.valobj.SkuVO;
 import cn.cyq.domain.activity.service.trial.node.RootNode;
 import cn.cyq.types.design.framework.tree.StrategyHandler;
 import lombok.AllArgsConstructor;
@@ -23,7 +25,7 @@ public class DefaultActivityStrategyFactory {
         this.rootNode = rootNode;
     }
 
-    public StrategyHandler<MarketProductEntity, DefaultActivityStrategyFactory.DynamicContext, TrialBalanceEntity> strategyHandler() {
+    public StrategyHandler<MarketProductEntity, DynamicContext, TrialBalanceEntity> strategyHandler() {
         return rootNode;
     }
 
@@ -31,5 +33,10 @@ public class DefaultActivityStrategyFactory {
     @Data
     @Builder
     @NoArgsConstructor
-    public static class DynamicContext {}
+    @AllArgsConstructor
+    public static class DynamicContext {
+
+        private GroupBuyActivityDiscountVO groupBuyActivityDiscountVO;
+        private SkuVO skuVO;
+    }
 }

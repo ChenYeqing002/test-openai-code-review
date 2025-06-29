@@ -5,7 +5,10 @@ import cn.cyq.domain.activity.model.entity.TrialBalanceEntity;
 import cn.cyq.domain.activity.service.trial.AbstractGroupBuyMarketSupport;
 import cn.cyq.domain.activity.service.trial.factory.DefaultActivityStrategyFactory;
 import cn.cyq.types.design.framework.tree.StrategyHandler;
+import cn.cyq.types.enums.ResponseCode;
+import cn.cyq.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,9 +31,16 @@ public class RootNode extends AbstractGroupBuyMarketSupport<MarketProductEntity,
      * @throws Exception
      */
     @Override
-    public TrialBalanceEntity apply(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
+    public TrialBalanceEntity doApply(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
         log.info("处理根节点业务");
-        return this.router(requestParameter, dynamicContext);
+        if (StringUtils.isBlank(requestParameter.getUserId()) ||
+                StringUtils.isBlank(requestParameter.getGoodsId()) ||
+                StringUtils.isBlank(requestParameter.getSource()) ||
+                StringUtils.isBlank(requestParameter.getChannel())
+        ) {
+            throw new AppException(ResponseCode.ILLEGAL_PARAMETER);
+        }
+        return router(requestParameter, dynamicContext);
     }
 
     /**

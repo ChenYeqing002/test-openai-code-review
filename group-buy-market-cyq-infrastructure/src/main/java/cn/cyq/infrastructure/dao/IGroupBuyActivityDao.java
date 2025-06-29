@@ -13,4 +13,10 @@ public interface IGroupBuyActivityDao {
 
     List<GroupBuyActivity> queryGroupBuyActivityList();
 
+    /**
+     * 查询有效的活动配置
+     * @param groupBuyActivity
+     * @return
+     */
+    GroupBuyActivity queryValidGroupBuyActivity(GroupBuyActivity groupBuyActivity);
 }

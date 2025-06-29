@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GroupBuyActivity implements Serializable{
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID= 5403012882454975344L;
 
     /**
      *  自增
@@ -32,6 +32,11 @@ public class GroupBuyActivity implements Serializable{
      *  活动ID
      */
     private Long activityId;
+
+    /**
+     *  活动名称
+     */
+    private String activityName;
 
     /**
      *  来源
