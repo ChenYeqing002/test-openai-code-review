@@ -1,6 +1,7 @@
 package cn.cyq.infrastructure.adapter.repository;
 
 import cn.cyq.domain.activity.adapter.repository.IActivityRepository;
+import cn.cyq.domain.activity.model.valobj.DiscountTypeEnum;
 import cn.cyq.domain.activity.model.valobj.GroupBuyActivityDiscountVO;
 import cn.cyq.domain.activity.model.valobj.SkuVO;
 import cn.cyq.infrastructure.dao.IGroupBuyActivityDao;
@@ -40,7 +41,7 @@ public class ActivityRepository implements IActivityRepository {
         GroupBuyActivityDiscountVO.GroupBuyDiscount groupBuyDiscount = GroupBuyActivityDiscountVO.GroupBuyDiscount.builder()
                 .discountName(groupBuyDiscountRes.getDiscountName())
                 .discountDesc(groupBuyDiscountRes.getDiscountDesc())
-                .discountType(groupBuyDiscountRes.getDiscountType())
+                .discountType(DiscountTypeEnum.getByCode(groupBuyDiscountRes.getDiscountType()))
                 .marketPlan(groupBuyDiscountRes.getMarketPlan())
                 .marketExpr(groupBuyDiscountRes.getMarketExpr())
                 .tagId(groupBuyDiscountRes.getTagId())

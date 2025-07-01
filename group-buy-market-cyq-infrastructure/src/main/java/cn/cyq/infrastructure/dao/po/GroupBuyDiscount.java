@@ -2,6 +2,8 @@ package cn.cyq.infrastructure.dao.po;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import cn.cyq.domain.activity.model.valobj.DiscountTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
