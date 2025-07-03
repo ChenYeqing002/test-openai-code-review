@@ -27,6 +27,8 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
 
     @Resource
     private EndNode endNode;
+    @Resource
+    private ErrorNode errorNode;
 
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
@@ -36,19 +38,24 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
 
     @Override
     protected void multiThread(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
+        // 异步查询活动配置
         QueryGroupBuyActivityDiscountVOThreadTask queryGroupBuyActivityDiscountVOThreadTask =
-                new QueryGroupBuyActivityDiscountVOThreadTask(requestParameter.getSource(), requestParameter.getChannel(), repository);
+                new QueryGroupBuyActivityDiscountVOThreadTask(requestParameter.getSource(), requestParameter.getChannel(), requestParameter.getGoodsId(), repository);
         FutureTask<GroupBuyActivityDiscountVO> groupBuyActivityDiscountVOFutureTask =
                 new FutureTask<>(queryGroupBuyActivityDiscountVOThreadTask);
         threadPoolExecutor.execute(groupBuyActivityDiscountVOFutureTask);
 
+        // 异步查询商品信息 - 在实际生产中，商品有同步库或者调用接口查询。这里暂时使用DB方式查询。
         QuerySkuVOFromDBThreadTask querySkuVOFromDBThreadTask =
                 new QuerySkuVOFromDBThreadTask(requestParameter.getGoodsId(), repository);
         FutureTask<SkuVO> skuVOFutureTask = new FutureTask<>(querySkuVOFromDBThreadTask);
         threadPoolExecutor.execute(skuVOFutureTask);
 
+        // 写入上下文 - 对于一些复杂场景，获取数据的操作，有时候会在下N个节点获取，这样前置查询数据，可以提高接口响应效率
         dynamicContext.setGroupBuyActivityDiscountVO(groupBuyActivityDiscountVOFutureTask.get(timeout, TimeUnit.MINUTES));
         dynamicContext.setSkuVO(skuVOFutureTask.get(timeout, TimeUnit.MINUTES));
+
+        log.info("拼团商品查询试算服务-MarketNode userId:{} 异步线程加载数据「GroupBuyActivityDiscountVO、SkuVO」完成", requestParameter.getUserId());
     }
 
     @Override
@@ -57,9 +64,14 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
         log.info("处理营销优惠节点业务");
 
         GroupBuyActivityDiscountVO groupBuyActivityDiscountVO = dynamicContext.getGroupBuyActivityDiscountVO();
+        if (null == groupBuyActivityDiscountVO) {
+            return router(requestParameter, dynamicContext);
+        }
         GroupBuyActivityDiscountVO.GroupBuyDiscount groupBuyDiscount = groupBuyActivityDiscountVO.getGroupBuyDiscount();
-
         SkuVO skuVO = dynamicContext.getSkuVO();
+        if (null == skuVO || null == groupBuyDiscount) {
+            return router(requestParameter, dynamicContext);
+        }
 
         IDiscountCalculateService discountCalculateService = discountCalculateServiceMap.get(groupBuyDiscount.getMarketPlan());
         if (null == discountCalculateService) {
@@ -76,6 +88,9 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
 
     @Override
     public StrategyHandler<MarketProductEntity, DefaultActivityStrategyFactory.DynamicContext, TrialBalanceEntity> get(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) {
+        if (null == dynamicContext.getGroupBuyActivityDiscountVO() || null == dynamicContext.getSkuVO() || null == dynamicContext.getDeductionPrice()) {
+            return errorNode;
+        }
         return endNode;
     }
 }

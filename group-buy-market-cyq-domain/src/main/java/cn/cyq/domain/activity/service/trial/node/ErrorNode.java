@@ -7,35 +7,30 @@ import cn.cyq.domain.activity.model.valobj.SkuVO;
 import cn.cyq.domain.activity.service.trial.AbstractGroupBuyMarketSupport;
 import cn.cyq.domain.activity.service.trial.factory.DefaultActivityStrategyFactory;
 import cn.cyq.types.design.framework.tree.StrategyHandler;
+import cn.cyq.types.enums.ResponseCode;
+import cn.cyq.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+/**
+ * 异常节点
+ */
 @Slf4j
-@Service("endNode")
-public class EndNode extends
+@Service("errorNode")
+public class ErrorNode extends
         AbstractGroupBuyMarketSupport<MarketProductEntity, DefaultActivityStrategyFactory.DynamicContext, TrialBalanceEntity> {
     @Override
     public TrialBalanceEntity doApply(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
-        log.info("处理正常结束节点业务");
+        log.info("处理异常节点业务");
 
-        GroupBuyActivityDiscountVO groupBuyActivityDiscountVO = dynamicContext.getGroupBuyActivityDiscountVO();
-        SkuVO skuVO = dynamicContext.getSkuVO();
+        if (null == dynamicContext.getGroupBuyActivityDiscountVO() || null == dynamicContext.getSkuVO()) {
+            log.info("商品无拼团营销配置 {}", requestParameter.getGoodsId());
+            throw new AppException(ResponseCode.E0002);
 
-        BigDecimal deductionPrice = dynamicContext.getDeductionPrice();
-
-        return TrialBalanceEntity.builder()
-                .goodsId(skuVO.getGoodsId())
-                .goodsName(skuVO.getGoodsName())
-                .originalPrice(skuVO.getOriginalPrice())
-                .deductionPrice(deductionPrice)
-                .targetCount(groupBuyActivityDiscountVO.getTarget())
-                .startTime(groupBuyActivityDiscountVO.getStartTime())
-                .endTime(groupBuyActivityDiscountVO.getEndTime())
-                .isVisible(false)
-                .isEnable(false)
-                .build();
+        }
+        return TrialBalanceEntity.builder().build();
     }
 
     @Override
