@@ -23,7 +23,19 @@ public class IndexGroupBuyMarketServiceTest {
     @Test
     public void test01() throws Exception {
         MarketProductEntity marketProductEntity = MarketProductEntity.builder()
-                .userId("chenyeqing")
+                .userId("baishazi")
+                .goodsId("9890001")
+                .source("s01")
+                .channel("c01")
+                .build();
+        TrialBalanceEntity trialBalanceEntity = indexGroupBuyMarketService.indexMarketTrial(marketProductEntity);
+        log.info("trial:{}", JSON.toJSONString(trialBalanceEntity));
+    }
+
+    @Test
+    public void test02() throws Exception {
+        MarketProductEntity marketProductEntity = MarketProductEntity.builder()
+                .userId("baishazi2")
                 .goodsId("9890001")
                 .source("s01")
                 .channel("c01")

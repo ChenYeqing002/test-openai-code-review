@@ -13,6 +13,8 @@ import cn.cyq.infrastructure.dao.po.GroupBuyActivity;
 import cn.cyq.infrastructure.dao.po.GroupBuyDiscount;
 import cn.cyq.infrastructure.dao.po.SCSkuActivity;
 import cn.cyq.infrastructure.dao.po.Sku;
+import cn.cyq.infrastructure.redis.IRedisService;
+import org.redisson.api.RBitSet;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -31,6 +33,9 @@ public class ActivityRepository implements IActivityRepository {
 
     @Resource
     private ISCSkuActivityDao skuActivityDao;
+
+    @Resource
+    private IRedisService redisService;
 
     @Override
     public GroupBuyActivityDiscountVO queryGroupBuyActivityDiscountVO(Long activityId) {
@@ -102,5 +107,16 @@ public class ActivityRepository implements IActivityRepository {
                 .activityId(scSkuActivity.getActivityId())
                 .goodsId(scSkuActivity.getGoodsId())
                 .build();
+    }
+
+    @Override
+    public boolean isTagCrowdRange(String tagId, String userId) {
+        RBitSet bitSet = redisService.getBitSet(tagId);
+        // 如果不存在，说明这个人群标签失效了，放行所有用户
+        if (!bitSet.isExists()) {
+            return Boolean.TRUE;
+        }
+        // 判断用户是否在标签内，在就放行，不在就拦截
+        return bitSet.get(redisService.getIndexFromUserId2(userId));
     }
 }

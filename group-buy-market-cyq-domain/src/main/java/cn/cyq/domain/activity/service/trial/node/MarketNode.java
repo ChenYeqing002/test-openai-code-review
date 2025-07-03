@@ -26,9 +26,10 @@ import java.util.concurrent.*;
 public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntity, DefaultActivityStrategyFactory.DynamicContext, TrialBalanceEntity> {
 
     @Resource
-    private EndNode endNode;
-    @Resource
     private ErrorNode errorNode;
+
+    @Resource
+    private TagNode tagNode;
 
     @Resource
     private ThreadPoolExecutor threadPoolExecutor;
@@ -91,6 +92,6 @@ public class MarketNode extends AbstractGroupBuyMarketSupport<MarketProductEntit
         if (null == dynamicContext.getGroupBuyActivityDiscountVO() || null == dynamicContext.getSkuVO() || null == dynamicContext.getDeductionPrice()) {
             return errorNode;
         }
-        return endNode;
+        return tagNode;
     }
 }

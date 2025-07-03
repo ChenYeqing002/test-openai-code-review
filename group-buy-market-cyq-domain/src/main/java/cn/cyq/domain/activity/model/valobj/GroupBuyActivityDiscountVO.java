@@ -1,9 +1,11 @@
 package cn.cyq.domain.activity.model.valobj;
 
+import cn.cyq.types.common.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 
@@ -57,6 +59,36 @@ public class GroupBuyActivityDiscountVO {
 
     /** 人群标签规则范围（多选；1可见限制、2参与限制） */
     private String tagScope;
+
+    /**
+     * 是否可见
+     * @return true:可见 false:不可见
+     */
+    public boolean isVisible() {
+        if (StringUtils.isBlank(this.tagScope)) {
+            return TagScopeEnumVO.VISIBLE.getAllow();
+        }
+        String[] split = this.tagScope.split(Constants.SPLIT);
+        if (split.length > 0 && StringUtils.isNotBlank(split[0]) && StringUtils.equals(split[0], "1") ) {
+            return TagScopeEnumVO.VISIBLE.getRefuse();
+        }
+        return TagScopeEnumVO.VISIBLE.getAllow();
+    }
+
+    /**
+     * 是否可用
+     * @return true:可用 false:不可用
+     */
+    public boolean isEnable() {
+        if (StringUtils.isBlank(this.tagScope)) {
+            return TagScopeEnumVO.ENABLE.getAllow();
+        }
+        String[] split = this.tagScope.split(Constants.SPLIT);
+        if (split.length > 1 && StringUtils.isNotBlank(split[1]) && StringUtils.equals(split[1], "2")) {
+            return TagScopeEnumVO.ENABLE.getRefuse();
+        }
+        return TagScopeEnumVO.ENABLE.getAllow();
+    }
 
     @Data
     @Builder

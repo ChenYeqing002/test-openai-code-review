@@ -58,9 +58,10 @@ public class TagRepository implements ITagRepository {
             crowdTagsDetailDao.addCrowdTagsUserId(crowdTagsDetailReq);
 
             RBitSet bitSet = redisService.getBitSet(tagId);
-//            bitSet.set(redisService.getIndexFromUserId2(userId));
-            bitSet.set(123);
+            bitSet.set(redisService.getIndexFromUserId2(userId));
         } catch (DuplicateKeyException ignore) {
+            RBitSet bitSet = redisService.getBitSet(tagId);
+            bitSet.set(redisService.getIndexFromUserId2(userId));
         }
     }
 
