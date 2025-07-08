@@ -29,7 +29,7 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
 
     private final RedissonClient redissonClient;
 
-    private final Map<String, Object> dccObject = new HashMap<>();
+    private final Map<String, Object> dccObjectMap = new HashMap<>();
 
     public DCCValueBeanFactory(RedissonClient redissonClient) {
         this.redissonClient = redissonClient;
@@ -56,7 +56,7 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
                 bucket.set(value);
 
                 // 3. 获取原始的类
-                Object objBean = dccObject.get(key);
+                Object objBean = dccObjectMap.get(key);
                 if (null == objBean) {
                     return;
                 }
@@ -73,8 +73,9 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
                     field.setAccessible(true);
                     field.set(objBean, value);
                     field.setAccessible(false);
+                    log.info("DCC 节点监听，动态设置值 {} {}", key, value);
                 } catch (Exception e) {
-                    throw new RuntimeException("抛出异常");
+                    throw new RuntimeException(e);
                 }
             }
         });
@@ -108,7 +109,7 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
             // 获取注解中的值信息
             String value = dccValue.value();
             if (StringUtils.isBlank(value)) {
-                throw new RuntimeException("DCCValue 注解中 value 属性不能为空");
+                throw new RuntimeException(field.getName() + " @DCCValue is not config value config case 「isSwitch/isSwitch:1」");
             }
 
             String[] split = value.split(":");
@@ -118,7 +119,7 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
             // 把设值暂定为默认值
             String setValue = defaultValue;
             if (StringUtils.isBlank(defaultValue)) {
-                throw new RuntimeException("DCCValue 注解中 value 属性没有默认值");
+                throw new RuntimeException("dcc config error " + key + " is not null - 请配置默认值！");
             }
 
             try {
@@ -137,10 +138,10 @@ public class DCCValueBeanFactory implements BeanPostProcessor {
                 field.set(targetBeanObject, setValue);
                 field.setAccessible(false);
             } catch (Exception e) {
-                throw new RuntimeException("反射异常");
+                throw new RuntimeException(e);
             }
             // 保存动态配置对象信息
-            dccObject.put(key, targetBeanObject);
+            dccObjectMap.put(key, targetBeanObject);
         }
 
         return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
