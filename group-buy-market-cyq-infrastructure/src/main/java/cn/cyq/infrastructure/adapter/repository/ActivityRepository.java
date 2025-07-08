@@ -13,6 +13,7 @@ import cn.cyq.infrastructure.dao.po.GroupBuyActivity;
 import cn.cyq.infrastructure.dao.po.GroupBuyDiscount;
 import cn.cyq.infrastructure.dao.po.SCSkuActivity;
 import cn.cyq.infrastructure.dao.po.Sku;
+import cn.cyq.infrastructure.dcc.DCCService;
 import cn.cyq.infrastructure.redis.IRedisService;
 import org.redisson.api.RBitSet;
 import org.springframework.stereotype.Repository;
@@ -36,6 +37,9 @@ public class ActivityRepository implements IActivityRepository {
 
     @Resource
     private IRedisService redisService;
+
+    @Resource
+    private DCCService dccService;
 
     @Override
     public GroupBuyActivityDiscountVO queryGroupBuyActivityDiscountVO(Long activityId) {
@@ -118,5 +122,15 @@ public class ActivityRepository implements IActivityRepository {
         }
         // 判断用户是否在标签内，在就放行，不在就拦截
         return bitSet.get(redisService.getIndexFromUserId2(userId));
+    }
+
+    @Override
+    public boolean downgradeSwitch() {
+        return dccService.isDowngradeSwitch();
+    }
+
+    @Override
+    public boolean cutRange(String userId) {
+        return dccService.isCutRange(userId);
     }
 }

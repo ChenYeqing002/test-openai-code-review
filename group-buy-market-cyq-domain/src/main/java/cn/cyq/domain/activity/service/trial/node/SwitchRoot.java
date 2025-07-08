@@ -5,6 +5,8 @@ import cn.cyq.domain.activity.model.entity.TrialBalanceEntity;
 import cn.cyq.domain.activity.service.trial.AbstractGroupBuyMarketSupport;
 import cn.cyq.domain.activity.service.trial.factory.DefaultActivityStrategyFactory;
 import cn.cyq.types.design.framework.tree.StrategyHandler;
+import cn.cyq.types.enums.ResponseCode;
+import cn.cyq.types.exception.AppException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,16 @@ public class SwitchRoot extends AbstractGroupBuyMarketSupport<MarketProductEntit
     @Override
     public TrialBalanceEntity doApply(MarketProductEntity requestParameter, DefaultActivityStrategyFactory.DynamicContext dynamicContext) throws Exception {
         log.info("处理开关节点业务");
+        String userId = requestParameter.getUserId();
+
+        if (repository.downgradeSwitch()) {
+            throw new AppException(ResponseCode.E0003);
+        }
+
+        if (repository.cutRange(userId)) {
+            throw new AppException(ResponseCode.E0004);
+        }
+
         return router(requestParameter, dynamicContext);
     }
 
