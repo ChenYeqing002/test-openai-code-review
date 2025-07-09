@@ -1,6 +1,7 @@
 package cn.cyq.api.response;
 
 import cn.cyq.types.enums.ResponseCode;
+import cn.cyq.types.exception.AppException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,6 +40,13 @@ public class Response<T> implements Serializable {
         return Response.<T>builder()
                 .code(responseCode.getCode())
                 .info(responseCode.getInfo())
+                .build();
+    }
+
+    public static <T> Response<T> error(AppException appException) {
+        return Response.<T>builder()
+                .code(appException.getCode())
+                .info(appException.getInfo())
                 .build();
     }
 

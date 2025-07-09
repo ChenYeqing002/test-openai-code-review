@@ -1,4 +1,4 @@
-package cn.cyq.infrastructure.dao.po;
+package cn.cyq.domain.trade.model.eneity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,22 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
-
-/**
- * @author Fuzhengwei bugstack.cn @小傅哥
- * @description 商品信息
- * @create 2024-12-21 10:45
- */
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class Sku {
+@AllArgsConstructor
+public class PayDiscountEntity {
 
-    /** 自增 */
-    private Long id;
     /** 来源 */
     private String source;
     /** 渠道 */
@@ -32,9 +23,8 @@ public class Sku {
     private String goodsName;
     /** 原始价格 */
     private BigDecimal originalPrice;
-    /** 创建时间 */
-    private LocalDateTime createTime;
-    /** 更新时间 */
-    private LocalDateTime updateTime;
-
+    /** 折扣价格 */
+    private BigDecimal deductionPrice;
+    /** 外部交易单号-确保外部调用唯一幂等 */
+    private String outTradeNo;
 }

@@ -1,7 +1,8 @@
 package cn.cyq.infrastructure.dao.po;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
+
 
 import cn.cyq.domain.activity.model.valobj.DiscountTypeEnum;
 import lombok.AllArgsConstructor;
@@ -66,12 +67,12 @@ public class GroupBuyDiscount implements Serializable{
     /**
      *  创建时间
      */
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      *  更新时间
      */
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
 
 }
