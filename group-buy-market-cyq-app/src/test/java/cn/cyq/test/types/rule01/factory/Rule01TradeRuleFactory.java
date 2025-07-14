@@ -4,6 +4,10 @@ import cn.cyq.test.types.rule01.logic.RuleLogic101;
 import cn.cyq.test.types.rule01.logic.RuleLogic102;
 import cn.cyq.types.design.framework.link.model1.ILogicLink;
 import com.alibaba.fastjson.JSONObject;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,5 +24,13 @@ public class Rule01TradeRuleFactory {
     public ILogicLink<String, JSONObject, String> openLogicLink() {
         ruleLogic101.appendNext(ruleLogic102);
         return ruleLogic101;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DynamicContext {
+        private String age;
     }
 }
