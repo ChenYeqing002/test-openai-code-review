@@ -21,7 +21,7 @@ public class Rule01TradeRuleFactory {
     @Resource
     private RuleLogic102 ruleLogic102;
 
-    public ILogicLink<String, JSONObject, String> openLogicLink() {
+    public ILogicLink<String, DynamicContext, String> openLogicLink() {
         ruleLogic101.appendNext(ruleLogic102);
         return ruleLogic101;
     }
@@ -32,5 +32,6 @@ public class Rule01TradeRuleFactory {
     @NoArgsConstructor
     public static class DynamicContext {
         private String age;
+        private String name;
     }
 }
