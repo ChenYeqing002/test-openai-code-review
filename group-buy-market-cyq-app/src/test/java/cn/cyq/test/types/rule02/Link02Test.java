@@ -25,7 +25,7 @@ public class Link02Test {
 
     @Test
     public void test_model02_01() throws Exception {
-        XxxResponse apply = businessLinkedList01.apply("4", new Rule02TradeRuleFactory.DynamicContext());
+        XxxResponse apply = businessLinkedList01.apply("123", new Rule02TradeRuleFactory.DynamicContext());
         log.info("result: {}", JSON.toJSONString(apply));
     }
 
