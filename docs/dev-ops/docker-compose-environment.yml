@@ -42,20 +42,28 @@ services:
 
   # Redis
   redis:
-    image: redis:6.2
+    # 推荐使用官方维护的RedisBloom镜像
+    image: redislabs/rebloom:latest
     container_name: redis
     restart: always
     hostname: redis
     privileged: true
+    # 解决架构不匹配问题（如适用）
+    platform: linux/amd64
     ports:
       - 16379:6379
     volumes:
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
+    # 明确指定加载RedisBloom模块
+    command: >
+      redis-server /usr/local/etc/redis/redis.conf
+      --loadmodule /usr/lib/redis/modules/redisbloom.so
     networks:
       - my-network
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      # 验证模块是否成功加载
+      test: |
+        redis-cli -p 6379 INFO modules | grep -q "name=bf" && redis-cli ping | grep -q PONG
       interval: 10s
       timeout: 5s
       retries: 3
